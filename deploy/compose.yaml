@@ -1,0 +1,40 @@
+name: offer-campus
+services:
+  offer:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      args:
+        DEBIAN_MIRROR: https://mirrors.aliyun.com
+        PIP_INDEX_URL: https://pypi.org/simple
+    image: offer-campus:20261017
+    env_file:
+      - ../.env
+      - ../.env.deploy
+    environment:
+      COOKIE_SECURE: "true"
+      # Safe only while app ports remain unpublished on this private Compose network.
+      FORWARDED_ALLOW_IPS: "*"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/healthz', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+  caddy:
+    image: caddy:2.11.7
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile.aliyun:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      offer:
+        condition: service_healthy
+    restart: unless-stopped
+volumes:
+  caddy_data:
+  caddy_config:

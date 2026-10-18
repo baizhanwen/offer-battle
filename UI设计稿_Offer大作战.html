@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='29' fill='none' stroke='%23B02A1F' stroke-width='5'/%3E%3Cpath d='M32 13 L34.6 28 L49 28 L37.6 36.5 L42 51 L32 42.5 L22 51 L26.4 36.5 L15 28 L29.4 28 Z' fill='%23B02A1F'/%3E%3C/svg%3E">
+<title>Offer大作战UI设计稿</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body {
+    font-family:'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
+    background:#EDE4D0;
+    background-image:radial-gradient(rgba(120,95,55,.06) 1px, transparent 1px);
+    background-size:14px 14px;
+    color:#2B2B2B;
+    min-height:100vh;
+  }
+  .wrap { max-width:1180px; margin:0 auto; padding:36px 20px 60px; }
+
+  .top { text-align:center; margin-bottom:30px; }
+  .top .stamp-mini { display:inline-block; }
+  .top h1 { font-family:'Songti SC','STSong',SimSun,serif; font-size:30px; font-weight:900; color:#B02A1F; letter-spacing:2px; margin-top:10px; }
+  .top .sub { font-size:14px; color:#7a6a4d; margin-top:6px; letter-spacing:1px; }
+
+  .tabs { display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin-bottom:26px; }
+  .tabs button {
+    font-family:inherit; font-size:14px; padding:10px 18px; border-radius:999px;
+    border:1.5px solid #B02A1F; background:#fff8ec; color:#B02A1F; cursor:pointer;
+    transition:all .18s ease; min-height:44px;
+  }
+  .tabs button:hover { background:#ffe9d8; }
+  .tabs button.active { background:#B02A1F; color:#fff; box-shadow:0 3px 0 #7a1c14; }
+
+  .stage { display:flex; justify-content:center; }
+
+  /* ===== 手机框 ===== */
+  .phone {
+    width:340px; max-width:100%; background:#0d0d0d; border-radius:46px; padding:12px;
+    box-shadow:0 30px 60px rgba(60,40,10,.35), 0 6px 16px rgba(60,40,10,.2);
+  }
+  .phone-inner {
+    position:relative; width:100%; height:700px; border-radius:36px; overflow:hidden;
+    background:#F7EFDE; display:flex; flex-direction:column;
+  }
+  .notch {
+    position:absolute; top:10px; left:50%; transform:translateX(-50%); width:110px; height:26px;
+    background:#0d0d0d; border-radius:20px; z-index:50;
+  }
+  .statusbar {
+    height:46px; flex:none; display:flex; align-items:center; justify-content:space-between;
+    padding:0 24px; font-size:13px; font-weight:600; color:#2B2B2B;
+  }
+  .statusbar .icons { display:flex; align-items:center; gap:5px; }
+
+  .screen { flex:1; display:none; flex-direction:column; overflow:hidden; position:relative; }
+  .screen.active { display:flex; }
+
+  /* 纸纹 */
+  .paper {
+    background:#F7EFDE;
+    background-image:linear-gradient(rgba(176,42,31,.02) 1px, transparent 1px),linear-gradient(90deg, rgba(176,42,31,.02) 1px, transparent 1px);
+    background-size:22px 22px;
+  }
+
+  /* ===== 通用印章 ===== */
+  .stamp { position:relative; }
+  .stamp svg { display:block; }
+  .seal { transform:rotate(-12deg); opacity:.92; filter:url(#rough); }
+
+  /* ===== 首页 ===== */
+  .home { align-items:center; justify-content:center; padding:24px; text-align:center; }
+  .home .redhead { width:100%; border-top:6px double #B02A1F; border-bottom:2px solid #B02A1F; padding:8px 0 10px; margin-bottom:30px; }
+  .home .redhead .org { font-family:'Songti SC',SimSun,serif; font-size:11px; color:#7a1c14; letter-spacing:4px; }
+  .home .logo-wrap { margin:8px 0 26px; }
+  .home h2 { font-family:'Songti SC','STSong',SimSun,serif; font-size:34px; font-weight:900; color:#B02A1F; letter-spacing:6px; }
+  .home .slogan { font-family:'Kaiti SC','STKaiti',KaiTi,serif; font-size:15px; color:#5b4a00; margin-top:10px; letter-spacing:2px; }
+  .home .divider { width:56px; height:2px; background:#B02A1F; margin:22px auto; opacity:.5; }
+  .home .btn-main {
+    width:100%; padding:16px; border:none; border-radius:10px; background:#B02A1F; color:#fff;
+    font-size:17px; font-weight:700; letter-spacing:4px; cursor:pointer; font-family:inherit;
+    box-shadow:0 4px 0 #7a1c14; margin-bottom:14px;
+  }
+  .home .btn-main:active { transform:translateY(3px); box-shadow:0 1px 0 #7a1c14; }
+  .home .btn-sub {
+    width:100%; padding:15px; border:1.5px solid #B02A1F; border-radius:10px; background:transparent;
+    color:#B02A1F; font-size:15px; font-weight:600; letter-spacing:2px; cursor:pointer; font-family:inherit;
+  }
+  .home .btn-video {
+    width:100%; padding:15px; border:1.5px solid #2B2B2B; border-radius:10px; background:#fff;
+    color:#2B2B2B; font-size:15px; font-weight:700; letter-spacing:1px; cursor:pointer; font-family:inherit;
+    display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:12px;
+  }
+  .home .foot { margin-top:26px; font-size:11px; color:#9a8f78; border-top:1px dashed #c9bb9d; padding-top:12px; letter-spacing:1px; }
+
+  /* ===== 岗位页 ===== */
+  .jobs { padding:16px; }
+  .jobs .head { font-family:'Kaiti SC','STKaiti',KaiTi,serif; font-size:19px; font-weight:700; text-align:center; margin:10px 0 16px; }
+  .jobs .grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; flex:1; align-content:start; }
+  .job-card {
+    background:#fffdf6; border:1.5px solid #2B2B2B; border-radius:12px; padding:12px 10px;
+    position:relative; cursor:pointer; transition:transform .15s ease;
+    box-shadow:2px 2px 0 rgba(43,43,43,.18);
+  }
+  .job-card:active { transform:scale(.97); }
+  .job-card .no { font-size:10px; color:#B02A1F; font-weight:800; letter-spacing:1px; }
+  .job-card .name { font-family:'Songti SC',SimSun,serif; font-size:15px; font-weight:900; margin:4px 0 3px; }
+  .job-card .desc { font-size:10px; color:#7a6a4d; line-height:1.5; }
+  .job-card.picked::after {
+    content:'应聘'; position:absolute; right:6px; bottom:6px; font-size:10px; font-weight:900;
+    color:#B02A1F; border:1.5px solid #B02A1F; border-radius:3px; padding:1px 5px; transform:rotate(-8deg);
+  }
+  .btn-random {
+    margin-top:12px; padding:15px; border:none; border-radius:10px; background:#2B2B2B; color:#fff;
+    font-size:16px; font-weight:700; letter-spacing:3px; cursor:pointer; font-family:inherit;
+    box-shadow:0 4px 0 #111; display:flex; align-items:center; justify-content:center; gap:8px;
+  }
+  .btn-random:active { transform:translateY(3px); box-shadow:0 1px 0 #111; }
+
+  /* ===== 面试间 ===== */
+  .interview { }
+  .chat-top {
+    flex:none; display:flex; align-items:center; gap:8px; padding:10px 12px;
+    background:#F7EFDE; border-bottom:2px solid #B02A1F;
+  }
+  .chat-top .back { font-size:18px; color:#2B2B2B; cursor:pointer; padding:4px 8px; }
+  .chat-top .avatar-sm { width:30px; height:30px; border-radius:50%; background:#2B2B2B; color:#fff; display:flex; align-items:center; justify-content:center; font-size:13px; }
+  .chat-top .who { flex:1; }
+  .chat-top .who b { display:block; font-size:13px; }
+  .chat-top .who span { font-size:10px; color:#7a6a4d; }
+  .chat-top .vol { font-size:15px; cursor:pointer; padding:4px; }
+  .chat-body { flex:1; overflow-y:auto; padding:14px 12px; display:flex; flex-direction:column; gap:12px; }
+  .bubble { max-width:78%; padding:11px 13px; border-radius:14px; font-size:14px; line-height:1.55; position:relative; }
+  .bubble.bot { align-self:flex-start; background:#fffdf6; border:1.5px solid #2B2B2B; border-top-left-radius:4px; box-shadow:2px 2px 0 rgba(43,43,43,.12); }
+  .bubble.bot .speaker { display:flex; align-items:center; gap:6px; margin-bottom:5px; }
+  .bubble.bot .speaker .avatar-sm { width:22px; height:22px; font-size:11px; }
+  .bubble.bot .speaker span { font-size:10px; color:#B02A1F; font-weight:700; }
+  .bubble.bot .caret { display:inline-block; width:2px; height:13px; background:#B02A1F; vertical-align:-2px; margin-left:2px; animation:blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity:0; } }
+  .bubble.me { align-self:flex-end; background:#2B2B2B; color:#fff; border-top-right-radius:4px; }
+  .chips { flex:none; display:flex; gap:8px; padding:0 12px 10px; flex-wrap:wrap; }
+  .chips button {
+    font-family:inherit; font-size:12px; padding:8px 12px; border-radius:999px;
+    border:1px solid #c9bb9d; background:#fff; color:#5b4a00; cursor:pointer; min-height:36px;
+  }
+  .inputbar { flex:none; display:flex; gap:8px; padding:10px 12px 14px; border-top:1px solid #ddd2b8; background:#F7EFDE; }
+  .inputbar input {
+    flex:1; font-family:inherit; font-size:16px; padding:12px 14px; border:1.5px solid #c9bb9d;
+    border-radius:10px; background:#fff; outline:none; min-height:44px;
+  }
+  .inputbar input:focus { border-color:#B02A1F; }
+  .inputbar .send {
+    border:none; border-radius:10px; background:#B02A1F; color:#fff; font-size:15px; font-weight:700;
+    padding:0 18px; cursor:pointer; font-family:inherit; min-height:44px;
+  }
+
+  /* ===== 录用单 ===== */
+  .offer-screen { align-items:center; justify-content:flex-start; padding:20px 16px; }
+  .offer-sheet {
+    width:100%; background:#FDF8EE; border:2.5px solid #2B2B2B; border-radius:6px;
+    padding:18px 16px 16px; position:relative; box-shadow:4px 4px 0 rgba(43,43,43,.25);
+  }
+  .offer-sheet .topline { text-align:center; border-bottom:3px double #B02A1F; padding-bottom:10px; }
+  .offer-sheet .topline .doc { font-size:10px; letter-spacing:3px; color:#7a6a4d; }
+  .offer-sheet .topline h3 { font-family:'Songti SC',SimSun,serif; font-size:24px; font-weight:900; color:#B02A1F; letter-spacing:6px; margin-top:4px; }
+  .offer-sheet .meta { display:flex; justify-content:space-between; font-size:11px; color:#5b4a00; margin:12px 0 4px; }
+  .offer-sheet .meta b { color:#2B2B2B; }
+  .scores { margin:12px 0 4px; }
+  .score { display:flex; align-items:center; gap:8px; margin-bottom:7px; }
+  .score .label { width:64px; font-size:11px; font-weight:600; flex:none; }
+  .score .bar { flex:1; height:9px; background:#eadfc6; border-radius:5px; overflow:hidden; }
+  .score .bar i { display:block; height:100%; border-radius:5px; background:#B02A1F; }
+  .score .val { width:18px; font-size:11px; font-weight:800; color:#B02A1F; }
+  .comment {
+    font-family:'Kaiti SC','STKaiti',KaiTi,serif; font-size:16px; color:#2B2B2B; text-align:center;
+    border-top:1px dashed #b3a68a; border-bottom:1px dashed #b3a68a; padding:10px 4px; margin:10px 0;
+  }
+  .offer-seal { position:absolute; right:14px; bottom:58px; }
+  .offer-actions { display:flex; gap:10px; margin-top:18px; }
+  .offer-actions button { flex:1; font-family:inherit; font-size:14px; font-weight:700; padding:13px 0; border-radius:10px; cursor:pointer; min-height:44px; }
+  .offer-actions .save { border:none; background:#B02A1F; color:#fff; box-shadow:0 3px 0 #7a1c14; }
+  .offer-actions .again { border:1.5px solid #2B2B2B; background:#fff; color:#2B2B2B; }
+
+  /* ===== 反转模式 ===== */
+  .reverse .bubble.bot { border-color:#B02A1F; }
+  .reverse .bubble.bot .speaker span { color:#B02A1F; }
+  .verdict { flex:none; display:flex; gap:10px; padding:0 12px 10px; }
+  .verdict button { flex:1; font-family:inherit; font-size:15px; font-weight:800; padding:13px 0; border:none; border-radius:10px; cursor:pointer; min-height:48px; }
+  .verdict .hire { background:#2F9E57; color:#fff; box-shadow:0 3px 0 #1d6b38; }
+  .verdict .fire { background:#B02A1F; color:#fff; box-shadow:0 3px 0 #7a1c14; }
+
+  /* ===== 面试官选择页 ===== */
+  .persona { padding:12px; }
+  .persona .chat-top .who b { font-size:15px; }
+  .persona-body { flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:10px; padding-bottom:6px; }
+  .p-card {
+    display:flex; gap:12px; align-items:center; background:#fffdf6; border:1.5px solid #2B2B2B;
+    border-radius:12px; padding:12px; position:relative; cursor:pointer;
+    box-shadow:2px 2px 0 rgba(43,43,43,.12); transition:transform .15s ease;
+  }
+  .p-card:active { transform:scale(.98); }
+  .p-card.picked { border-color:#B02A1F; box-shadow:2px 2px 0 rgba(176,42,31,.3); }
+  .p-avatar {
+    width:46px; height:46px; border-radius:50%; flex:none; display:flex; align-items:center; justify-content:center;
+    font-size:18px; font-weight:800; color:#fff; font-family:'Songti SC',SimSun,serif;
+  }
+  .p-avatar.a-toxic { background:#2B2B2B; }
+  .p-avatar.a-shy { background:#6b8f71; }
+  .p-avatar.a-dean { background:#a3763a; }
+  .p-avatar.a-dumb { background:#b02a1f; }
+  .p-card .p-info { flex:1; min-width:0; }
+  .p-card .p-info b { display:block; font-size:15px; }
+  .p-card .p-info span { font-size:11px; color:#7a6a4d; }
+  .p-card .p-info em { display:block; font-family:'Kaiti SC','STKaiti',KaiTi,serif; font-size:12px; color:#5b4a00; margin-top:3px; font-style:normal; }
+  .p-card.picked::after {
+    content:'就选TA'; position:absolute; right:8px; top:8px; font-size:10px; font-weight:900;
+    color:#B02A1F; border:1.5px solid #B02A1F; border-radius:3px; padding:1px 5px; transform:rotate(-8deg);
+  }
+  .persona .start-bar { flex:none; display:flex; gap:8px; padding-top:10px; }
+  .persona .start-bar .send { flex:1; min-height:48px; letter-spacing:4px; }
+
+  /* ===== 视频面试 ===== */
+  .video-screen { background:#1c222b; color:#fff; }
+  .v-top {
+    flex:none; display:flex; align-items:center; justify-content:space-between;
+    padding:10px 14px; font-size:12px; color:#aeb7c3; background:rgba(0,0,0,.35);
+  }
+  .v-top .v-who { display:flex; align-items:center; gap:8px; min-width:0; }
+  .v-top .v-who b { color:#fff; font-size:14px; }
+  .v-top .v-who span { color:#aeb7c3; }
+  .v-top .v-timer { font-variant-numeric:tabular-nums; }
+  .v-body {
+    flex:1; position:relative; display:flex; align-items:center; justify-content:center; overflow:hidden;
+  }
+  .v-bg-grid {
+    position:absolute; inset:0;
+    background-image:linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+    background-size:26px 26px;
+  }
+  .v-avatar { position:relative; z-index:2; filter:drop-shadow(0 10px 24px rgba(0,0,0,.45)); }
+  .v-nameplate {
+    position:absolute; z-index:3; top:12px; left:50%; transform:translateX(-50%);
+    background:rgba(0,0,0,.55); border:1px solid rgba(255,255,255,.25); border-radius:999px;
+    padding:5px 14px; font-size:11px; color:#fff; letter-spacing:1px;
+  }
+  .v-think {
+    position:absolute; z-index:3; bottom:18px; left:50%; transform:translateX(-50%);
+    background:rgba(0,0,0,.55); border-radius:999px; padding:6px 16px; font-size:14px; letter-spacing:4px; color:#fff;
+  }
+  .pip {
+    position:absolute; z-index:4; right:12px; bottom:14px; width:92px; height:122px;
+    border-radius:12px; background:#0f141b; border:2px solid rgba(255,255,255,.6); overflow:hidden;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;
+  }
+  .pip .pip-face { width:44px; height:44px; border-radius:50%; background:#4a5568; display:flex; align-items:center; justify-content:center; font-size:18px; color:#cfd6e0; }
+  .pip .pip-tag { position:absolute; top:5px; left:6px; font-size:9px; color:#fff; background:rgba(0,0,0,.5); border-radius:4px; padding:1px 5px; }
+  .pip .pip-rec { font-size:8px; color:#ff6b6b; letter-spacing:1px; }
+  .v-caption {
+    flex:none; margin:0 14px 10px; background:rgba(247,239,222,.96); color:#2B2B2B;
+    border-left:4px solid #B02A1F; border-radius:10px; padding:11px 14px; font-size:14px; line-height:1.55;
+  }
+  .v-caption .who { font-size:11px; font-weight:800; color:#B02A1F; margin-bottom:3px; }
+  .v-chips { flex:none; display:flex; gap:8px; padding:0 14px 10px; flex-wrap:wrap; }
+  .v-chips button {
+    font-family:inherit; font-size:12px; padding:8px 12px; border-radius:999px;
+    border:1px solid rgba(255,255,255,.35); background:rgba(255,255,255,.08); color:#e7ebf0; cursor:pointer; min-height:36px;
+  }
+  .v-ctrl { flex:none; display:flex; align-items:center; justify-content:center; gap:30px; padding:8px 0 16px; }
+  .v-btn {
+    display:flex; flex-direction:column; align-items:center; gap:4px; background:none; border:none;
+    color:#cfd6e0; font-size:10px; cursor:pointer; font-family:inherit; min-height:44px;
+  }
+  .v-btn .v-ico {
+    width:44px; height:44px; border-radius:50%; background:rgba(255,255,255,.12); display:flex; align-items:center; justify-content:center;
+  }
+  .v-hang {
+    display:flex; flex-direction:column; align-items:center; gap:4px; background:none; border:none;
+    color:#fff; font-size:10px; cursor:pointer; font-family:inherit; min-height:44px;
+  }
+  .v-hang .v-ico { width:48px; height:48px; border-radius:50%; background:#C83E2E; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 10px rgba(200,62,46,.4); }
+
+  .legend { max-width:760px; margin:34px auto 0; background:#fff8ec; border:1.5px solid #c9bb9d; border-radius:14px; padding:16px 20px; font-size:13px; line-height:1.8; color:#5b4a00; }
+  .legend b { color:#B02A1F; }
+  .swatches { display:flex; gap:14px; flex-wrap:wrap; margin-top:8px; }
+  .sw { display:flex; align-items:center; gap:6px; font-size:12px; color:#5b4a00; }
+  .sw i { width:18px; height:18px; border-radius:4px; display:inline-block; border:1px solid rgba(0,0,0,.15); }
+
+  @media (max-width:560px) {
+    .wrap { padding:24px 12px 50px; }
+    .phone { width:100%; border-radius:38px; }
+    .phone-inner { height:640px; }
+    .tabs button { padding:8px 12px; font-size:13px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top">
+    <svg class="stamp-mini" width="64" height="64" viewBox="0 0 64 64">
+      <circle cx="32" cy="32" r="29" fill="none" stroke="#B02A1F" stroke-width="3"/>
+      <circle cx="32" cy="32" r="23" fill="none" stroke="#B02A1F" stroke-width="1.2" stroke-dasharray="3 2.5"/>
+      <path d="M32 12 L34.6 27 L49 27 L37.6 35.5 L42 50 L32 41.5 L22 50 L26.4 35.5 L15 27 L29.4 27 Z" fill="#B02A1F"/>
+      <text x="32" y="6.5" text-anchor="middle" font-size="7" fill="#B02A1F" font-weight="800" letter-spacing="1">OFFER 大作战</text>
+      <text x="32" y="59.5" text-anchor="middle" font-size="7" fill="#B02A1F" letter-spacing="1">人事部 · 校园分部</text>
+    </svg>
+    <h1>Offer 大作战 · UI 设计稿</h1>
+    <div class="sub">AI 模拟面试 · 移动端 5 屏高保真预览（复古红头文件风）</div>
+  </div>
+
+  <div class="tabs">
+    <button data-tab="home">首页</button>
+    <button data-tab="jobs">岗位页</button>
+    <button data-tab="persona">面试官</button>
+    <button data-tab="interview" class="active">面试间</button>
+    <button data-tab="video">视频面试</button>
+    <button data-tab="offer">录用单</button>
+    <button data-tab="reverse">反转模式</button>
+  </div>
+
+  <div class="stage">
+    <div class="phone">
+      <div class="phone-inner">
+        <div class="notch"></div>
+        <div class="statusbar">
+          <span>9:41</span>
+          <span class="icons">
+            <svg width="15" height="11" viewBox="0 0 15 11"><rect x="0" y="7" width="3" height="4" fill="#2B2B2B"/><rect x="4" y="5" width="3" height="6" fill="#2B2B2B"/><rect x="8" y="2.5" width="3" height="8.5" fill="#2B2B2B"/><rect x="12" y="0" width="3" height="11" fill="#2B2B2B" opacity=".35"/></svg>
+            <svg width="16" height="11" viewBox="0 0 16 11"><path d="M1 4 C5 0.5 11 0.5 15 4 L13.5 6 C10.2 3.3 5.8 3.3 2.5 6 Z" fill="#2B2B2B"/><path d="M3.5 7 C6.5 4.8 9.5 4.8 12.5 7 L11.5 8.5 C9 6.8 7 6.8 4.5 8.5 Z" fill="#2B2B2B"/><circle cx="8" cy="9.4" r="1.4" fill="#2B2B2B"/></svg>
+          </span>
+        </div>
+
+        <!-- 首页 -->
+        <div class="screen home paper" id="sc-home">
+          <div class="redhead"><div class="org">黄淮学院 · 人工智能与新媒体联合招聘会</div></div>
+          <div class="logo-wrap">
+            <svg width="92" height="92" viewBox="0 0 64 64">
+              <circle cx="32" cy="32" r="29" fill="none" stroke="#B02A1F" stroke-width="3"/>
+              <circle cx="32" cy="32" r="23" fill="none" stroke="#B02A1F" stroke-width="1.2" stroke-dasharray="3 2.5"/>
+              <path d="M32 12 L34.6 27 L49 27 L37.6 35.5 L42 50 L32 41.5 L22 50 L26.4 35.5 L15 27 L29.4 27 Z" fill="#B02A1F"/>
+              <text x="32" y="6.5" text-anchor="middle" font-size="7" fill="#B02A1F" font-weight="800">OFFER 大作战</text>
+              <text x="32" y="59.5" text-anchor="middle" font-size="7" fill="#B02A1F">人事部 · 校园分部</text>
+            </svg>
+          </div>
+          <h2>OFFER 大作战</h2>
+          <div class="slogan">让 AI 面试官，替你爸妈考考你</div>
+          <div class="divider"></div>
+          <button class="btn-main">开 始 面 试</button>
+          <button class="btn-video">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#2B2B2B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="13" height="12" rx="2.5"/><path d="M15 10.5l6-3.5v10l-6-3.5"/></svg>
+            视频面试 · 开摄像头
+          </button>
+          <button class="btn-sub">反转 · 你面 AI</button>
+          <div class="foot">扫码即玩 · 当前演示模式</div>
+        </div>
+
+        <!-- 岗位页 -->
+        <div class="screen jobs paper" id="sc-jobs">
+          <div class="head">今天你要应聘的是…</div>
+          <div class="grid">
+            <div class="job-card"><div class="no">NO.01</div><div class="name">宿舍楼长</div><div class="desc">全楼 WiFi 密码掌握者，查寝界的和平大使</div></div>
+            <div class="job-card picked"><div class="no">NO.02</div><div class="name">摸鱼艺术家</div><div class="desc">上班如上坟，摸鱼如修行，绩效全看运气</div></div>
+            <div class="job-card"><div class="no">NO.03</div><div class="name">食堂品鉴师</div><div class="desc">用舌头丈量每个窗口的黑暗料理指数</div></div>
+            <div class="job-card"><div class="no">NO.04</div><div class="name">熬夜冠军</div><div class="desc">凌晨三点依旧精神，白天随时可能消失</div></div>
+            <div class="job-card"><div class="no">NO.05</div><div class="name">占座专家</div><div class="desc">一本书占三个座，考研党的一生之敌</div></div>
+            <div class="job-card"><div class="no">NO.06</div><div class="name">Wi-Fi 玄学师</div><div class="desc">路由器放哪全凭风水，信号全靠意念</div></div>
+          </div>
+          <button class="btn-random">
+            <svg width="17" height="17" viewBox="0 0 16 16"><rect x="1" y="1" width="14" height="14" rx="3" fill="none" stroke="#fff" stroke-width="1.5"/><circle cx="5.5" cy="5.5" r="1.3" fill="#fff"/><circle cx="10.5" cy="5.5" r="1.3" fill="#fff"/><circle cx="5.5" cy="10.5" r="1.3" fill="#fff"/><circle cx="10.5" cy="10.5" r="1.3" fill="#fff"/></svg>
+            随机抽一个
+          </button>
+        </div>
+
+        <!-- 面试官选择 -->
+        <div class="screen persona paper" id="sc-persona">
+          <div class="chat-top">
+            <span class="back">‹</span>
+            <div class="who"><b>选择面试官</b><span>应聘岗位：摸鱼艺术家</span></div>
+          </div>
+          <div class="persona-body">
+            <div class="p-card picked">
+              <div class="p-avatar a-toxic">毒</div>
+              <div class="p-info"><b>毒舌 HR</b><span>犀利刻薄 · 不留情面</span><em>"简历很优秀，就是人不太行。"</em></div>
+            </div>
+            <div class="p-card">
+              <div class="p-avatar a-shy">社</div>
+              <div class="p-info"><b>社恐学长</b><span>吞吞吐吐 · 边问边道歉</span><em>"那个……我随便问问哈，你别有压力……"</em></div>
+            </div>
+            <div class="p-card">
+              <div class="p-avatar a-dean">导</div>
+              <div class="p-info"><b>教导主任</b><span>方言腔 · 爱说教</span><em>"同学，你这个态度是要出问题的呀。"</em></div>
+            </div>
+            <div class="p-card">
+              <div class="p-avatar a-dumb">憨</div>
+              <div class="p-info"><b>憨憨 HR</b><span>提问自己先笑场</span><em>"哈哈哈……不好意思，我刚想到一个更好笑的。"</em></div>
+            </div>
+          </div>
+          <button class="btn-random">
+            <svg width="17" height="17" viewBox="0 0 16 16"><rect x="1" y="1" width="14" height="14" rx="3" fill="none" stroke="#fff" stroke-width="1.5"/><circle cx="5.5" cy="5.5" r="1.3" fill="#fff"/><circle cx="10.5" cy="5.5" r="1.3" fill="#fff"/><circle cx="5.5" cy="10.5" r="1.3" fill="#fff"/><circle cx="10.5" cy="10.5" r="1.3" fill="#fff"/></svg>
+            随机安排一个
+          </button>
+          <div class="start-bar">
+            <button class="send">开 始 面 试</button>
+          </div>
+        </div>
+
+        <!-- 面试间 -->
+        <div class="screen interview paper active" id="sc-interview">
+          <div class="chat-top">
+            <span class="back">‹</span>
+            <div class="avatar-sm">毒</div>
+            <div class="who"><b>毒舌 HR · 摸鱼艺术家</b><span>第 2 问 / 共 4 问 · 每题 30 秒</span></div>
+            <span class="vol"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M3 10v4a1 1 0 0 0 1 1h3l5 4V5L7 9H4a1 1 0 0 0-1 1z" fill="#2B2B2B"/><path d="M16 8a5 5 0 0 1 0 8" fill="none" stroke="#2B2B2B" stroke-width="1.6" stroke-linecap="round"/></svg></span>
+          </div>
+          <div class="chat-body">
+            <div class="bubble bot">
+              <div class="speaker"><span class="avatar-sm">毒</span><span>毒舌 HR</span></div>
+              第一问：请用三个字介绍你自己。<br>多一个字，扣一分。
+            </div>
+            <div class="bubble me">能吃、能睡、能摸鱼。</div>
+            <div class="bubble bot">
+              <div class="speaker"><span class="avatar-sm">毒</span><span>毒舌 HR</span></div>
+              有点东西。第二问：具体说说，<br>你打算怎么"摸"这个鱼？<span class="caret"></span>
+            </div>
+          </div>
+          <div class="chips">
+            <button>我不知道</button>
+            <button>我觉得我不配</button>
+            <button>让我想想</button>
+          </div>
+          <div class="inputbar">
+            <input type="text" placeholder="输入你的回答…">
+            <button class="send">发送</button>
+          </div>
+        </div>
+
+        <!-- 录用单 -->
+        <div class="screen offer-screen paper" id="sc-offer">
+          <div class="offer-sheet">
+            <div class="topline"><div class="doc">聘 用 通 知</div><h3>OFFER 录用通知</h3></div>
+            <div class="meta"><span>编号 <b>OF20261017-066</b></span><span>岗位 <b>摸鱼艺术家</b></span></div>
+            <div class="scores">
+              <div class="score"><span class="label">抗压能力</span><span class="bar"><i style="width:60%"></i></span><span class="val">6</span></div>
+              <div class="score"><span class="label">脸皮厚度</span><span class="bar"><i style="width:88%"></i></span><span class="val">9</span></div>
+              <div class="score"><span class="label">离谱程度</span><span class="bar"><i style="width:64%"></i></span><span class="val">6</span></div>
+              <div class="score"><span class="label">眼神坚定</span><span class="bar"><i style="width:38%"></i></span><span class="val">4</span></div>
+              <div class="score"><span class="label">就业潜力</span><span class="bar"><i style="width:55%"></i></span><span class="val">6</span></div>
+            </div>
+            <div class="comment">录用！明天来食堂试岗，先帮 HR 打一个月饭。</div>
+            <div class="offer-seal seal">
+              <svg width="86" height="86" viewBox="0 0 86 86">
+                <circle cx="43" cy="43" r="40" fill="rgba(176,42,31,.14)" stroke="#B02A1F" stroke-width="2.5"/>
+                <circle cx="43" cy="43" r="33" fill="none" stroke="#B02A1F" stroke-width="1" stroke-dasharray="4 3"/>
+                <path d="M43 26 L45.4 38 L57 38 L48 46 L51.5 58 L43 51 L34.5 58 L38 46 L29 38 L40.6 38 Z" fill="#B02A1F"/>
+                <text x="43" y="20" text-anchor="middle" font-size="8" fill="#B02A1F" font-weight="800">OFFER大作战人事部</text>
+                <text x="43" y="70" text-anchor="middle" font-size="7.5" fill="#B02A1F">2026.10.17</text>
+              </svg>
+            </div>
+          </div>
+          <div class="offer-actions">
+            <button class="save">截图保存</button>
+            <button class="again">再来一次</button>
+          </div>
+        </div>
+
+        <!-- 反转模式 -->
+        <div class="screen interview reverse paper" id="sc-reverse">
+          <div class="chat-top">
+            <span class="back">‹</span>
+            <div class="avatar-sm">应</div>
+            <div class="who"><b>反转 · 你面应聘者</b><span>你来提问，它来表演</span></div>
+            <span class="vol"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M3 10v4a1 1 0 0 0 1 1h3l5 4V5L7 9H4a1 1 0 0 0-1 1z" fill="#2B2B2B"/><path d="M16 8a5 5 0 0 1 0 8" fill="none" stroke="#2B2B2B" stroke-width="1.6" stroke-linecap="round"/></svg></span>
+          </div>
+          <div class="chat-body">
+            <div class="bubble me">为什么想来我们公司？</div>
+            <div class="bubble bot">
+              <div class="speaker"><span class="avatar-sm">应</span><span>应聘者·阿强</span></div>
+              因为你们食堂好吃，<br>而且包住——我宿舍快断电了。
+            </div>
+          </div>
+          <div class="verdict">
+            <button class="hire">录取</button>
+            <button class="fire">淘汰</button>
+          </div>
+          <div class="inputbar">
+            <input type="text" placeholder="输入你的问题…">
+            <button class="send">提问</button>
+          </div>
+        </div>
+
+        <!-- 视频面试 -->
+        <div class="screen video-screen" id="sc-video">
+          <div class="v-top">
+            <span class="v-who"><span class="back">‹</span><b>视频面试</b><span>· 毒舌HR</span></span>
+            <span>摸鱼艺术家</span>
+            <span class="v-timer">00:47 · 面试中</span>
+          </div>
+          <div class="v-body">
+            <div class="v-bg-grid"></div>
+            <div class="v-nameplate">毒舌 HR · 人事部</div>
+            <div class="v-avatar">
+              <svg width="232" height="272" viewBox="0 0 240 280">
+                <path d="M52 280 Q60 192 120 192 Q180 192 188 280 Z" fill="#2f3542"/>
+                <path d="M120 196 L78 280 L162 280 Z" fill="#f5f5f5"/>
+                <path d="M120 202 L111 236 L120 252 L129 236 Z" fill="#B02A1F"/>
+                <rect x="103" y="152" width="34" height="44" rx="11" fill="#e8b98a"/>
+                <ellipse cx="120" cy="106" rx="49" ry="55" fill="#f2c99a"/>
+                <path d="M71 96 Q71 50 120 52 Q169 50 169 96 Q169 78 155 71 Q140 58 120 60 Q95 58 85 71 Q71 78 71 96 Z" fill="#3a2f28"/>
+                <circle cx="97" cy="109" r="16.5" fill="none" stroke="#222" stroke-width="3"/>
+                <circle cx="143" cy="109" r="16.5" fill="none" stroke="#222" stroke-width="3"/>
+                <path d="M113.5 109 L126.5 109" stroke="#222" stroke-width="3"/>
+                <circle cx="97" cy="109" r="3.6" fill="#222"/>
+                <circle cx="143" cy="109" r="3.6" fill="#222"/>
+                <path d="M82 89 L105 97" stroke="#3a2f28" stroke-width="3.6" stroke-linecap="round"/>
+                <path d="M158 89 L135 97" stroke="#3a2f28" stroke-width="3.6" stroke-linecap="round"/>
+                <path d="M103 133 Q120 148 137 133" stroke="#a0522d" stroke-width="3.6" fill="none" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="v-think">正在组织语言…</div>
+            <div class="pip">
+              <div class="pip-tag">我</div>
+              <div class="pip-face">
+                <svg width="30" height="30" viewBox="0 0 40 40"><circle cx="20" cy="15" r="9" fill="#f2c99a"/><path d="M8 40 Q8 27 20 27 Q32 27 32 40 Z" fill="#4a5568"/><circle cx="16" cy="14" r="1.6" fill="#222"/><circle cx="24" cy="14" r="1.6" fill="#222"/><path d="M15 20 Q20 23 25 20" stroke="#a0522d" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>
+              </div>
+              <span class="pip-rec">● REC</span>
+            </div>
+          </div>
+          <div class="v-caption"><div class="who">毒舌 HR 正在说</div>第二问：具体说说，你打算怎么"摸"这个鱼？</div>
+          <div class="v-chips">
+            <button>我不知道</button>
+            <button>我觉得我不配</button>
+            <button>让我想想</button>
+          </div>
+          <div class="v-ctrl">
+            <button class="v-btn"><span class="v-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#cfd6e0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><line x1="12" y1="18" x2="12" y2="21"/></svg></span>静音</button>
+            <button class="v-btn"><span class="v-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#cfd6e0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/></svg></span>翻转</button>
+            <button class="v-hang"><span class="v-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.9a2 2 0 0 1-.4 2.1L8 10a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.9.6 2.9.7a2 2 0 0 1 1.7 2z"/></svg></span>结束面试</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <b>设计规范（v1.1）</b>
+    <div class="swatches">
+      <span class="sw"><i style="background:#F7EFDE"></i> 纸色 #F7EFDE</span>
+      <span class="sw"><i style="background:#B02A1F"></i> 印章红 #B02A1F</span>
+      <span class="sw"><i style="background:#2B2B2B"></i> 墨黑 #2B2B2B</span>
+      <span class="sw"><i style="background:#FDF8EE"></i> 卡片 #FDF8EE</span>
+      <span class="sw"><i style="background:#2F9E57"></i> 录取绿 #2F9E57</span>
+    </div>
+    标题宋体 · 评语楷体 · 正文系统字体 · 印章统一 SVG 圆章（盖章效果：倾斜 + 半透明红）· 图标全部内联 SVG，不使用 emoji
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var tabs=document.querySelectorAll('.tabs button');
+  var screens={home:document.getElementById('sc-home'),jobs:document.getElementById('sc-jobs'),persona:document.getElementById('sc-persona'),interview:document.getElementById('sc-interview'),video:document.getElementById('sc-video'),offer:document.getElementById('sc-offer'),reverse:document.getElementById('sc-reverse')};
+  tabs.forEach(function(btn){
+    btn.addEventListener('click',function(){
+      tabs.forEach(function(b){b.classList.remove('active');});
+      btn.classList.add('active');
+      Object.keys(screens).forEach(function(k){screens[k].classList.remove('active');});
+      var t=btn.getAttribute('data-tab');
+      if(screens[t]){screens[t].classList.add('active');}
+    });
+  });
+  function toast(msg){
+    var t=document.createElement('div');
+    t.textContent=msg;
+    t.style.cssText='position:fixed;left:50%;bottom:36px;transform:translateX(-50%);background:#2B2B2B;color:#fff;padding:10px 18px;border-radius:999px;font-size:13px;z-index:999;box-shadow:0 4px 12px rgba(0,0,0,.3);';
+    document.body.appendChild(t);
+    setTimeout(function(){t.remove();},1500);
+  }
+  document.querySelectorAll('.phone button').forEach(function(b){
+    b.addEventListener('click',function(){toast('设计稿预览：此处为交互示意');});
+  });
+  document.querySelectorAll('.p-card').forEach(function(c){
+    c.addEventListener('click',function(){
+      document.querySelectorAll('.p-card').forEach(function(x){x.classList.remove('picked');});
+      c.classList.add('picked');
+    });
+  });
+  document.querySelectorAll('.job-card').forEach(function(c){
+    c.addEventListener('click',function(){
+      document.querySelectorAll('.job-card').forEach(function(x){x.classList.remove('picked');});
+      c.classList.add('picked');
+    });
+  });
+})();
+</script>
+</body>
+</html>

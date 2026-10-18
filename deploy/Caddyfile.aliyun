@@ -1,0 +1,15 @@
+# Prepared only. Apply after approval to publish on this exact server.
+{
+	default_sni 47.117.105.33
+}
+
+https://47.117.105.33 {
+	tls {
+		issuer acme {
+			dir https://acme-v02.api.letsencrypt.org/directory
+			profile shortlived
+			disable_tlsalpn_challenge
+		}
+	}
+	reverse_proxy offer:8000
+}

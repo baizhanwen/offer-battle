@@ -1,0 +1,14 @@
+.env
+.env.*
+!.env.example
+.venv/
+node_modules/
+__pycache__/
+.pytest_cache/
+*.pyc
+docs/artifacts/
+.DS_Store
+certs/
+dist/
+答辩材料/.build/
+_shots/report.json

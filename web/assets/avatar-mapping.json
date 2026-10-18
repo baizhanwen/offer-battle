@@ -1,0 +1,27 @@
+[
+  {
+    "role_id": "cyber_judge_k07",
+    "member": "面试官头像/面试官头像_赛博判官_透明.png",
+    "derivative": "cyber_judge_k07.webp"
+  },
+  {
+    "role_id": "slacking_senior",
+    "member": "面试官头像/面试官头像_摸鱼前辈_透明.png",
+    "derivative": "slacking_senior.webp"
+  },
+  {
+    "role_id": "mystic_interviewer",
+    "member": "面试官头像/面试官头像_玄学观面师_透明.png",
+    "derivative": "mystic_interviewer.webp"
+  },
+  {
+    "role_id": "emo_poet_hr",
+    "member": "面试官头像/面试官头像_emo诗人HR_透明.png",
+    "derivative": "emo_poet_hr.webp"
+  },
+  {
+    "role_id": "chatty_host",
+    "member": "面试官头像/面试官头像_话痨话事人_透明.png",
+    "derivative": "chatty_host.webp"
+  }
+]
